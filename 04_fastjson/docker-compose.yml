@@ -1,0 +1,32 @@
+services:
+  fastjson-target:
+    image: vulhub/fastjson:1.2.24
+    container_name: fastjson-server
+    ports:
+      - "8090:8090"
+    dns:
+      - 172.31.0.53
+    restart: always
+    depends_on:
+      - dnslog
+    networks:
+      - fastjson-net
+
+  dnslog:
+    build:
+      context: ./dnslog
+      dockerfile: Dockerfile
+    container_name: dnslog-server
+    ports:
+      - "8081:80"
+    restart: always
+    networks:
+      fastjson-net:
+        ipv4_address: 172.31.0.53
+
+networks:
+  fastjson-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16
